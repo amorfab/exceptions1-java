@@ -1,6 +1,7 @@
 package application;
 
 import model.entities.Reserva;
+import model.exceptions.DomainException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,21 +9,19 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class Program {
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-        System.out.print("Nro Quarto: ");
-        int nroQuarto = sc.nextInt();
-        sc.nextLine();
-        System.out.print("Data Check-in (dd/mm/yyyy): ");
-        Date dataCheckIn = sdf.parse(sc.next());
-        System.out.print("Data Check-out (dd/mm/yyyy): ");
-        Date dataCheckOut = sdf.parse(sc.next());
+        try{
+            System.out.print("Nro Quarto: ");
+            int nroQuarto = sc.nextInt();
+            sc.nextLine();
+            System.out.print("Data Check-in (dd/mm/yyyy): ");
+            Date dataCheckIn = sdf.parse(sc.next());
+            System.out.print("Data Check-out (dd/mm/yyyy): ");
+            Date dataCheckOut = sdf.parse(sc.next());
 
-        if (!dataCheckOut.after(dataCheckIn)){
-            System.out.println("Erro na reserva: Data Check-out deve ser maior que a Data Check-in");
-        }else{
             Reserva reserva = new Reserva(nroQuarto, dataCheckIn, dataCheckOut);
             System.out.print("Reserva: " + reserva);
 
@@ -33,13 +32,19 @@ public class Program {
             System.out.print("Data Check-out (dd/mm/yyyy): ");
             dataCheckOut = sdf.parse(sc.next());
 
-            String erro = reserva.atualizaDatas(dataCheckIn, dataCheckOut);
-            if (erro != null) {
-                System.out.println("Erro na reserva: " + erro);
-            }else{
-                System.out.print("Reserva: " + reserva);
-            }
+            reserva.atualizaDatas(dataCheckIn, dataCheckOut);
+            System.out.print("Reserva: " + reserva);
         }
+        catch (ParseException e){
+            System.out.println("Data com formato invalido");
+        }
+        catch (DomainException e){
+            System.out.println("Erro na reserva: " + e.getMessage());
+        }
+        catch (RuntimeException e){
+            System.out.println("Erro inexperado");
+        }
+
         sc.close();
     }
 }
